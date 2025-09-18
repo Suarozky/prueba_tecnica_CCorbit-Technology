@@ -21,27 +21,141 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## API Usuario-Publicaciones
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+API REST desarrollada con NestJS, TypeORM y PostgreSQL que permite gestionar usuarios y sus publicaciones.
 
-## Project setup
+## Características
 
-```bash
-$ npm install
+- **Entidades**: Usuario y Publicación con relación 1:N
+- **CRUD completo** para ambas entidades
+- **Validaciones** con class-validator
+- **DTOs** para transferencia de datos
+- **Base de datos**: PostgreSQL con TypeORM
+- **Endpoint especial**: Obtener usuario con todas sus publicaciones
+
+## Arquitectura
+
+El proyecto sigue la arquitectura modular de NestJS:
+
+```
+src/
+├── entities/           # Entidades de TypeORM
+│   ├── user.entity.ts
+│   └── publication.entity.ts
+├── users/             # Módulo de usuarios
+│   ├── dto/
+│   ├── users.controller.ts
+│   ├── users.service.ts
+│   └── users.module.ts
+├── publications/      # Módulo de publicaciones
+│   ├── dto/
+│   ├── publications.controller.ts
+│   ├── publications.service.ts
+│   └── publications.module.ts
+└── database/          # Configuración de base de datos
+    └── database.module.ts
 ```
 
-## Compile and run the project
+## Configuración del Proyecto
+
+### 1. Instalar dependencias
+
+```bash
+npm install
+```
+
+### 2. Configurar base de datos
+
+Crear un archivo `.env` en la raíz del proyecto:
+
+```env
+DB_TYPE=postgres
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=tu_usuario
+DB_PASSWORD=tu_contraseña
+DB_DATABASE=prueba_tecnica
+NODE_ENV=development
+```
+
+### 3. Crear la base de datos
+
+Asegúrate de que PostgreSQL esté ejecutándose y crea la base de datos:
+
+```sql
+CREATE DATABASE prueba_tecnica;
+```
+
+### 4. Ejecutar el proyecto
 
 ```bash
 # development
-$ npm run start
+npm run start
 
-# watch mode
-$ npm run start:dev
+# watch mode (recomendado)
+npm run start:dev
 
 # production mode
-$ npm run start:prod
+npm run start:prod
+```
+
+La aplicación estará disponible en `http://localhost:3000`
+
+## API Endpoints
+
+### Usuarios
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/users` | Crear usuario |
+| GET | `/users` | Listar todos los usuarios |
+| GET | `/users/:id` | Obtener usuario por ID |
+| GET | `/users/:id/publications` | **Obtener usuario con sus publicaciones** |
+| PATCH | `/users/:id` | Actualizar usuario |
+| DELETE | `/users/:id` | Eliminar usuario |
+
+### Publicaciones
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/publications` | Crear publicación |
+| GET | `/publications` | Listar todas las publicaciones |
+| GET | `/publications?userId=:id` | Listar publicaciones de un usuario |
+| GET | `/publications/:id` | Obtener publicación por ID |
+| PATCH | `/publications/:id` | Actualizar publicación |
+| DELETE | `/publications/:id` | Eliminar publicación |
+
+## Ejemplos de Uso
+
+### Crear Usuario
+
+```bash
+curl -X POST http://localhost:3000/users \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Juan Pérez",
+    "email": "juan@example.com",
+    "password": "123456"
+  }'
+```
+
+### Crear Publicación
+
+```bash
+curl -X POST http://localhost:3000/publications \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Mi primera publicación",
+    "content": "Este es el contenido de mi primera publicación",
+    "userId": 1
+  }'
+```
+
+### Obtener Usuario con Publicaciones
+
+```bash
+curl http://localhost:3000/users/1/publications
 ```
 
 ## Run tests
